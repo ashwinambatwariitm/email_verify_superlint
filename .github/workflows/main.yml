@@ -1,0 +1,49 @@
+name: Combined CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # --------------------------------------------------------------
+  # JOB 1: Required Identifier Check
+  # --------------------------------------------------------------
+  identifier_check:
+    name: Run Custom Identifier Step
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Required Identifier Validation Step
+      - name: 24f2009283@ds.study.iitm.ac.in - Validation Step
+        run: |
+          echo "GitHub Runner ID: ${{ github.run_id }}"
+          echo "Step successfully executed."
+
+  # --------------------------------------------------------------
+  # JOB 2: Super-Linter
+  # --------------------------------------------------------------
+  super_lint:
+    name: Lint Codebase
+    runs-on: ubuntu-latest
+
+    permissions:
+      statuses: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Super-Linter
+        uses: github/super-linter@v5
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
